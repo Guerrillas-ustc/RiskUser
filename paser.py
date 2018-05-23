@@ -6,24 +6,26 @@ Created on Wed Apr 25 19:54:42 2018
 """
 
 import numpy as np
-import re
-from collections import namedtuple
-import sklearn
+import os
+import sys
+
 
 sms_value = ['uid','opp_num','opp_head','opp_len','start_time','in_out'] 
 voice_value  = ['uid','opp_num','opp_head','opp_len','start_time','end_time','call_type','in_out']
 web_value = ['uid','wa_name','visit_cnt','visit_dura','up_flow','down_flow','wa_type','date']        
 log_type = ['voice','sms','web']
-def load_log():
-    with open('uid_train.txt','r') as file:
+def load_log(path):
+    
+    uidpath = os.path.join(path,'uid_train.txt')
+    with open(uidpath, 'r') as file:
     
         uid_set = dict( line.strip().split() for line in file)
     
     
     sms =dict((key,[]) for key in uid_set.keys())
     
-    
-    with open('sms_train.txt' ,'r') as file:
+    sms_path = os.path.join(path,'sms_train.txt')
+    with open(sms_path, 'r') as file:
         
         for line in file:
             
@@ -33,8 +35,8 @@ def load_log():
             sms[uid].append(log_dict)
     
     voice = dict((key,[]) for key in uid_set.keys())
-    
-    with open('voice_train.txt','r') as file:
+    voice_path = os.path.join(path,'voice_train.txt')
+    with open(voice_path, 'r') as file:
         
         for line in file:
             log_dict = dict(zip(voice_value,line.strip().split()))
@@ -43,8 +45,9 @@ def load_log():
             voice[uid].append(log_dict)        
     
     web = dict((key,[]) for key in uid_set.keys())
-    web_value = ['uid','wa_name','visit_cnt','visit_dura','up_flow','down_flow','wa_type','date']        
-    with open('wa_train.txt','r',encoding = 'utf-8') as file:        
+
+    wa_path = os.path.join(path,'wa_train.txt')
+    with open(wa_path, 'r', encoding = 'utf-8') as file:        
         for line in file:
             log_dict = dict(zip(web_value,line.strip().split()))
             uid = log_dict['uid']
@@ -59,16 +62,22 @@ def load_log():
     np.save('train_set',raw_set)
 
 
-def feature_work(uid):
-    global sets
-    
+
     
 def main():
     
+    default_path = 'C:/Users/Sdli/Jdata'
     
-    global sets
-    sets = np.load('train_set.npy')[()]
-    train_id = sets.keys()
+    if len(sys.argv) > 1 :
+        path = sys.argv[1]
+    else:
+        path  = default_path
+    load_log(path)
+    
+    return
+    
+if __name__ == '__main__':
+    main()
     
     
     
